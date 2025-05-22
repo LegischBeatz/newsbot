@@ -1,4 +1,4 @@
-## AI News Bot
+# AI News Bot
 
 A Python-based automation tool that fetches the latest articles from various cybersecurity and technology RSS feeds, summarizes them using a local LLM, and posts punchy tweets to X (formerly Twitter). It also provides a command-line interface for database management.
 
@@ -6,50 +6,47 @@ A Python-based automation tool that fetches the latest articles from various cyb
 
 ## Table of Contents
 
-* [Features](#features)
-* [Prerequisites](#prerequisites)
-* [Installation](#installation)
-* [Configuration](#configuration)
-* [Usage](#usage)
-
-  * [1. Fetching News](#1-fetching-news)
-  * [2. Database Management](#2-database-management)
-  * [3. Posting Tweets](#3-posting-tweets)
-* [Database Schema](#database-schema)
-* [Logging](#logging)
-* [Development](#development)
-* [Contributing](#contributing)
-* [License](#license)
+- [Features](#features)  
+- [Prerequisites](#prerequisites)  
+- [Installation](#installation)  
+- [Configuration](#configuration)  
+- [Usage](#usage)  
+  - [1. Fetching News](#1-fetching-news)  
+  - [2. Database Management](#2-database-management)  
+  - [3. Posting Tweets](#3-posting-tweets)  
+- [Database Schema](#database-schema)  
+- [Logging](#logging)  
+- [Development](#development)  
+- [Contributing](#contributing)  
+- [License](#license)  
 
 ---
 
 ## Features
 
-* **RSS Aggregation**: Pulls from multiple feeds (e.g., NYTimes Technology, Wired AI, Darknet Diaries, Schneier on Security).
-* **Duplicate Detection**: Uses an MD5 hash of title + summary to prevent storing duplicates.
-* **Local SQLite Database**: Stores articles and posted hashes for idempotent operations.
-* **LLM Summarization**: Sends article title and summary to a user-defined LLM endpoint for tweet generation.
-* **Twitter Integration**: Posts directly to X/Twitter via the `tweepy` client.
-* **CLI Database Manager**: List, delete, or clean up database tables.
+- **RSS Aggregation**: Pulls from multiple feeds (e.g., NYTimes Technology, Wired AI, Darknet Diaries, Schneier on Security).  
+- **Duplicate Detection**: Uses an MD5 hash of title + summary to prevent storing duplicates.  
+- **Local SQLite Database**: Stores articles and posted hashes for idempotent operations.  
+- **LLM Summarization**: Sends article title and summary to a user-defined LLM endpoint for tweet generation.  
+- **Twitter Integration**: Posts directly to X/Twitter via the `tweepy` client.  
+- **CLI Database Manager**: List, delete, or clean up database tables.  
 
 ---
 
 ## Prerequisites
 
-* Python 3.8 or newer
-* `sqlite3` (bundled with Python)
-* Python packages:
-
-  * `feedparser`
-  * `requests`
-  * `tweepy`
-  * `python-dotenv` (optional)
+- Python 3.8 or newer  
+- `sqlite3` (bundled with Python)  
+- Python packages:  
+  - `feedparser`  
+  - `requests`  
+  - `tweepy`  
+  - `python-dotenv` (optional)  
 
 Install packages with:
-
 ```bash
 pip install -r requirements.txt
-```
+````
 
 ---
 
@@ -58,15 +55,10 @@ pip install -r requirements.txt
 1. **Clone the repository**:
 
    ```bash
+   git clone https://github.com/yourusername/ai-news-bot.git
+   cd ai-news-bot
    ```
-
-git clone [https://github.com/yourusername/ai-news-bot.git](https://github.com/yourusername/ai-news-bot.git)
-cd ai-news-bot
-
-````
-
 2. **Install dependencies** (see [Prerequisites](#prerequisites)).
-
 3. **Configure** the application by editing `config.ini` (see [Configuration](#configuration)).
 
 ---
@@ -92,7 +84,7 @@ debug_mode = False
 
 [RSSFeeds]
 feeds = https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml, https://www.wired.com/feed/tag/ai/latest/rss, ...
-````
+```
 
 * **TwitterAPI**: Credentials for posting tweets.
 * **LLM**: URL and model name for your local language model.
@@ -186,22 +178,3 @@ python main.py
 * **Add new feeds** by updating `RSSFeeds` in `config.ini`.
 * **Adjust fetch limits** in `news_fetcher.py` (currently `entries[:3]`).
 * **Customize tweet style** in `main.py`'s `summarize()` prompt.
-
----
-
-## Contributing
-
-1. Fork the repo.
-2. Create a feature branch: `git checkout -b feature/YourFeature`
-3. Commit your changes: \`git commit -m "Add YourFeature"
-4. Push branch: `git push origin feature/YourFeature`
-5. Open a Pull Request.
-
-Please follow the existing code style and update tests where applicable.
-
----
-
-## License
-
-Distributed under the MIT License. See `LICENSE` for details.
-
