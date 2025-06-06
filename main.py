@@ -151,7 +151,7 @@ Write a tweet-style summary of the article that captures attention like a breaki
         return None
 
     # Trim stray quotes and append link
-    tweet = result.strip('"\'')
+    tweet = result.strip("\"'")
 
     return f"{tweet}\n\n{link}"
 
