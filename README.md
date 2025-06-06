@@ -46,7 +46,7 @@ A Python-based automation tool that fetches the latest articles from various cyb
 Install packages with:
 ```bash
 pip install -r requirements.txt
-````
+```
 
 ---
 
