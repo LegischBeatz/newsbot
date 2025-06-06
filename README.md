@@ -9,6 +9,7 @@ A Python-based automation tool that fetches the latest articles from various cyb
 - [Features](#features)  
 - [Prerequisites](#prerequisites)  
 - [Installation](#installation)  
+- [Quick Start](#quick-start)
 - [Configuration](#configuration)  
 - [Usage](#usage)  
   - [1. Fetching News](#1-fetching-news)  
@@ -17,6 +18,7 @@ A Python-based automation tool that fetches the latest articles from various cyb
 - [Database Schema](#database-schema)  
 - [Logging](#logging)  
 - [Development](#development)  
+- [Running Tests](#running-tests)
 - [Contributing](#contributing)  
 - [License](#license)  
 
@@ -60,6 +62,13 @@ pip install -r requirements.txt
    ```
 2. **Install dependencies** (see [Prerequisites](#prerequisites)).
 3. **Configure** the application by editing `config.ini` (see [Configuration](#configuration)).
+
+## Quick Start
+
+1. Update `config.ini` with your API keys and RSS feeds.
+2. Fetch articles with `python news_fetcher.py`.
+3. Post the latest article by running `python main.py`.
+
 
 ---
 
@@ -178,3 +187,23 @@ python main.py
 * **Add new feeds** by updating `RSSFeeds` in `config.ini`.
 * **Adjust fetch limits** in `news_fetcher.py` (currently `entries[:3]`).
 * **Customize tweet style** in `main.py`'s `summarize()` prompt.
+
+## Running Tests
+
+Run the test suite with `pytest` to ensure everything works as expected:
+
+```bash
+pytest -q
+```
+
+---
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
