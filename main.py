@@ -125,7 +125,7 @@ class LLMClient:
 
 
 def summarize(title: str, summary: str, link: str, llm: LLMClient) -> Optional[str]:
-    """Ask the LLM to write a punchy, sub-220-char tweet for our article."""
+    """Ask the LLM to write a punchy, sub-300-char tweet for our article."""
     prompt = dedent(f"""
 You are a cybersecurity journalist writing for X (formerly Twitter).
 
