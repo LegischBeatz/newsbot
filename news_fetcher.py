@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = os.path.join(BASE_DIR, "news_articles.db")
 TABLE_NAME = "articles"
 
-print("BASE_DIR is:", BASE_DIR, DB_NAME )
+logger.debug("BASE_DIR is: %s %s", BASE_DIR, DB_NAME)
 
 # --- Read Config ---
 CONFIG_PATH = os.path.join(BASE_DIR, "config.ini")
