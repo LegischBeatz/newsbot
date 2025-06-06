@@ -11,11 +11,12 @@ A Python-based automation tool that fetches the latest articles from various cyb
 - [Installation](#installation)  
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)  
-- [Usage](#usage)  
-  - [1. Fetching News](#1-fetching-news)  
-  - [2. Database Management](#2-database-management)  
-  - [3. Posting Tweets](#3-posting-tweets)  
-- [Database Schema](#database-schema)  
+- [Usage](#usage)
+  - [1. Fetching News](#1-fetching-news)
+  - [2. Database Management](#2-database-management)
+  - [3. Posting Tweets](#3-posting-tweets)
+  - [4. Web App](#4-web-app)
+- [Database Schema](#database-schema)
 - [Logging](#logging)  
 - [Development](#development)  
 - [Running Tests](#running-tests)
@@ -30,8 +31,9 @@ A Python-based automation tool that fetches the latest articles from various cyb
 - **Duplicate Detection**: Uses an MD5 hash of title + summary to prevent storing duplicates.  
 - **Local SQLite Database**: Stores articles and posted hashes for idempotent operations.  
 - **LLM Summarization**: Sends article title and summary to a user-defined LLM endpoint for tweet generation.  
-- **Twitter Integration**: Posts directly to X/Twitter via the `tweepy` client.  
-- **CLI Database Manager**: List, delete, or clean up database tables.  
+- **Twitter Integration**: Posts directly to X/Twitter via the `tweepy` client.
+- **CLI Database Manager**: List, delete, or clean up database tables.
+- **Web Interface**: Browse stored articles via a lightweight Flask app.
 
 ---
 
@@ -42,8 +44,9 @@ A Python-based automation tool that fetches the latest articles from various cyb
 - Python packages:  
   - `feedparser`  
   - `requests`  
-  - `tweepy`  
-  - `python-dotenv` (optional)  
+  - `tweepy`
+  - `flask`
+  - `python-dotenv` (optional)
 
 Install packages with:
 ```bash
@@ -68,6 +71,7 @@ pip install -r requirements.txt
 1. Update `config.ini` with your API keys and RSS feeds.
 2. Fetch articles with `python news_fetcher.py`.
 3. Post the latest article by running `python main.py`.
+4. Browse articles in your browser with `python webapp.py`.
 
 
 ---
@@ -149,6 +153,16 @@ python main.py
 * Connects to your LLM to craft a sub-300-character tweet.
 * Posts via Tweepy (or logs if `debug_mode=True`).
 * Records the article’s MD5 in `posts` to prevent reposting.
+
+### 4. Web App
+
+Launch a local server to browse the stored articles:
+
+```bash
+python webapp.py
+```
+
+Open `http://localhost:5000` in your browser to view the data.
 
 ---
 
