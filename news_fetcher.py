@@ -3,54 +3,52 @@ news_fetcher.py
 Fetches news articles from configured RSS feeds and stores them in the database.
 """
 
-import sqlite3
-import feedparser
-import logging
 import hashlib
-import configparser
+import logging
 from datetime import datetime
-import os
+from pathlib import Path
+import sqlite3
+
+import feedparser
+from settings import CONFIG_PATH, DB_PATH
+import configparser
+from typing import Iterable, Optional
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # --- Global Constants ---
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_NAME = os.path.join(BASE_DIR, "news_articles.db")
 TABLE_NAME = "articles"
 
-# --- Read Config ---
-CONFIG_PATH = os.path.join(BASE_DIR, "config.ini")
 
-config = configparser.ConfigParser()
-config.read(CONFIG_PATH)
-RSS_FEEDS = [url.strip() for url in config['RSSFeeds']['feeds'].split(',')]
+def load_feeds(path: Path = CONFIG_PATH) -> list[str]:
+    """Return a list of RSS feed URLs from the config file."""
+    parser = configparser.ConfigParser()
+    parser.read(path)
+    return [url.strip() for url in parser["RSSFeeds"]["feeds"].split(',')]
 
 
-def initialize_db():
+def initialize_db() -> None:
     """
     Create the database and articles table if they do not exist.
     """
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-
-    cursor.execute(f'''
-        CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            summary TEXT,
-            link TEXT NOT NULL,
-            published_at TEXT,
-            md5sum TEXT UNIQUE NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(f'''
+            CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                summary TEXT,
+                link TEXT NOT NULL,
+                published_at TEXT,
+                md5sum TEXT UNIQUE NOT NULL
+            )
+        ''')
+        conn.commit()
     logger.info("Database initialized.")
 
 
-def generate_md5(title, summary):
+def generate_md5(title: str, summary: str) -> str:
     """
     Generate an MD5 hash from the article title and summary text.
 
@@ -65,46 +63,48 @@ def generate_md5(title, summary):
     return hashlib.md5(md5_input).hexdigest()
 
 
-def fetch_and_store_news():
-    """
-    Fetch news articles from RSS feeds defined in the config and store them in the database.
-    Skips articles that are already present (based on the MD5 hash).
-    """
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
 
-    for feed_url in RSS_FEEDS:
-        feed = feedparser.parse(feed_url)
+def fetch_and_store_news(feeds: Optional[Iterable[str]] = None) -> None:
+    """Fetch configured RSS feeds and store new articles in the database."""
+    if feeds is None:
+        feeds = load_feeds()
 
-        if getattr(feed, "bozo", False):
-            logger.warning("Error parsing feed %s: %s", feed_url, feed.bozo_exception)
-            continue
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
 
-        for entry in feed.entries[:3]:
-            title = entry.get("title", "No title available")
-            summary = entry.get("summary", "No summary available")
-            link = entry.get("link", "No link available")
-            published_at = entry.get("published", datetime.now().isoformat())
-        
-            md5sum = generate_md5(title, summary)
-        
-            # Check if the article already exists
-            cursor.execute(f"SELECT 1 FROM {TABLE_NAME} WHERE md5sum = ?", (md5sum,))
-            if cursor.fetchone():
-                logger.info("Article already exists: %s", title)
+        for feed_url in feeds:
+            feed = feedparser.parse(feed_url)
+
+            if getattr(feed, "bozo", False):
+                logger.warning("Error parsing feed %s: %s", feed_url, feed.bozo_exception)
                 continue
-        
-            # Insert new article
-            cursor.execute(f'''
-                INSERT INTO {TABLE_NAME} (title, summary, link, published_at, md5sum)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (title, summary, link, published_at, md5sum))
-        
-            logger.info("Stored Article: %s", title)
 
+            for entry in feed.entries[:3]:
+                title = entry.get("title", "No title available")
+                summary = entry.get("summary", "No summary available")
+                link = entry.get("link", "No link available")
+                published_at = entry.get("published", datetime.now().isoformat())
 
-    conn.commit()
-    conn.close()
+                md5sum = generate_md5(title, summary)
+
+                cursor.execute(
+                    f"SELECT 1 FROM {TABLE_NAME} WHERE md5sum = ?",
+                    (md5sum,),
+                )
+                if cursor.fetchone():
+                    logger.info("Article already exists: %s", title)
+                    continue
+
+                cursor.execute(
+                    f"""INSERT INTO {TABLE_NAME}
+                            (title, summary, link, published_at, md5sum)
+                            VALUES (?, ?, ?, ?, ?)""",
+                    (title, summary, link, published_at, md5sum),
+                )
+
+                logger.info("Stored Article: %s", title)
+
+        conn.commit()
     logger.info("All articles have been stored in the database.")
 
 

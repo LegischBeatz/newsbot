@@ -1,9 +1,7 @@
-from pathlib import Path
 import sqlite3
 from flask import Flask, render_template_string
 
-BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "news_articles.db"
+from settings import DB_PATH
 
 app = Flask(__name__)
 
